@@ -1,6 +1,6 @@
 import sys 
 sys.path.append('../ProgettoTLN_DiCaro')
-import Esercizio1.porco as cazzo
+import esercizio1.porco as cazzo
 from nltk.wsd import lesk
 
 
