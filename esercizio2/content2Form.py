@@ -1,6 +1,6 @@
 import sys 
 sys.path.append('../ProgettoTLN_DiCaro')
-import esercizio1.porco as es1
+import esercizio1.similarity as es1
 from nltk.wsd import lesk
 from collections import Counter
 from rich.console import Console
