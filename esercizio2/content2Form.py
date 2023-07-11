@@ -50,4 +50,4 @@ def main():
     print_table(occurrences)
 
 if __name__ == '__main__':
-    main()
+    main() #ciaone
