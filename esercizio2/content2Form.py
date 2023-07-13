@@ -28,16 +28,16 @@ def onomasiological_search(phrases):
         synsets = [wn.synsets(x[0]) for x in sub_list] #estriamo i synsets delle parole piu frequenti
 
         flat_list2 = [item for sublist in synsets for item in sublist]
-        lemma_name= [x.lemmas()[0].name() for x in flat_list2] #estraiamo i nomi
+        lemma_name= [x.lemmas()[0].name() for x in flat_list2] #estraiamo i nomi sysnet
         sub_list2 = Counter(lemma_name).most_common()[0:10]
 
-        hypos = [wn.synsets(x[0])[0].hyponyms() for x in sub_list2]
+        hypos = [wn.synsets(x[0])[0].hyponyms() for x in sub_list2] 
         flat_res = [item for sublist in hypos for item in sublist]
-        count_syn = Counter(flat_res).most_common()[0:20] 
+        count_syn = Counter(flat_res).most_common()[0:20] #estraggo i primi 20 iponimi
 
         syns[concept] = count_syn  
-        definitions[concept] = [x[0].definition() for x in count_syn]
-    definitions_lemmas = es1.lemmatizzation(definitions)
+        definitions[concept] = [x[0].definition() for x in count_syn] #degli iponimi
+    definitions_lemmas = es1.lemmatizzation(definitions) 
     return definitions_lemmas, syns
 
 def wordDisambiguation_search(phrases):
@@ -62,12 +62,12 @@ def vectorizer(definitions_lemmas, phrases):
     for key, values in definitions_lemmas.items():
         join_def = definitions_lemmas[key] + phrases[key]
         document=[]
-        vectorizer = CountVectorizer()#per creare la matrice di parole uniche
-        for elem in join_def:#per ogni array token
-            document.append(" ".join(elem)) #per ogni array convertilo in stringa e mettilo in document
+        vectorizer = CountVectorizer()
+        for elem in join_def:
+            document.append(" ".join(elem)) 
         vectorizer.fit(document)
         vector = vectorizer.transform(document)
-        def_wd = vector[0:len(definitions_lemmas[key])]
+        def_wd = vector[0:len(definitions_lemmas[key])] #divido matrice tra frasi definizioni iponimi e non 
         def_og = vector[len(definitions_lemmas[key]):(len(definitions_lemmas[key])+(len(phrases[key])))]
         tuple_list = []
         for elem in def_wd.toarray().tolist():
@@ -81,7 +81,7 @@ def vectorizer(definitions_lemmas, phrases):
 
         i = 0
         temp=[]
-        for x in tuple_list:
+        for x in tuple_list:  #prendo i primi 5 synset diversi con il valore più alto
             if i < 5:
                 if x[1] not in temp:
                     cosine_res[key].append(x)
@@ -112,7 +112,7 @@ def res_score(cos,syns):
     }
     for key, value in cos.items():
         for x in value:
-            occurrences[key].append((syns[key][x[1]][0],x[0]))
+            occurrences[key].append((syns[key][x[1]][0],x[0])) #associo sysnset allo score
     return occurrences 
 
 def print_table(results):
@@ -141,4 +141,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main() #ciaone
+    main() 
