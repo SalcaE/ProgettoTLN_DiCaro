@@ -13,12 +13,18 @@ import numpy as np
  
 
 def read_tsv(location):
-    data = []
+    data = {
+        'door': [],
+        'ladybug': [],
+        'pain': [],
+        'blurriness': []
+    }
+
     fileText= panda.read_csv(location, sep='\t', header=None)
     for row in fileText.columns[1:]:
         x= fileText[row].tolist()
         key=  x.pop(0)
-        data.append({key: x})
+        data[key] = x
     return data
 
 
@@ -36,7 +42,7 @@ def pos_tagger(nltk_tag):
 
 
 def lemmatizzation(data):
-    lemmas_set = {  #dizionario di array
+    lemmas_set = {
         'door': [],
         'ladybug': [],
         'pain': [],
@@ -45,21 +51,21 @@ def lemmatizzation(data):
 
     lemmatizer = WordNetLemmatizer() #classe contentente tutti i lemmi(parole base)
     stop = set(stopwords.words('english') + list(string.punctuation) + ["'s", "'", "n't","\"", "``", "'d", "'re", "''","''"])#rimozioni di parole e punteggiature 
-    for a in data: #a è elemento array {key:[frasi]}
-        for key, values in a.items(): #values contiene tutte le frasi già divise su key
-            tokens = [word_tokenize(i.lower()) for i in values]#trasformo ogni paraola delle frasi in token e le metto lower
-            for x in tokens:
-                lemmas = []
-                index = tokens.index(x) #prendo indice nell'array di token/frasi
-                tmp = [word for word in x if not word in stop] #in tmp ho la frase pulita con le stop
-                tmp_line = list(map(lambda x: (x[0], pos_tagger(x[1])), nltk.pos_tag(tmp))) #fai tagging VEDI
-                for word, tag in tmp_line:
-                    if tag is None:
-                        lemmas.append(word) #copia diretto
-                    else: #se il tag è conosciuto:      
-                        lemmas.append(lemmatizer.lemmatize(word, tag)) #metti parole base/lemmatizzata
-                tokens[index] = lemmas #sovrascrivi nella stessa posizione la nuova frase lemmatizata <3
-            lemmas_set[key] = tokens #metti all'interno della giusta key del dizionario l'insieme di parole lemmatizzate (edu chan <3)
+
+    for key, values in data.items(): #values contiene tutte le frasi già divise su key
+        tokens = [word_tokenize(i.lower()) for i in values]#trasformo ogni paraola delle frasi in token e le metto lower
+        for x in tokens:
+            lemmas = []
+            index = tokens.index(x) #prendo indice nell'array di token/frasi
+            tmp = [word for word in x if not word in stop] #in tmp ho la frase pulita con le stop
+            tmp_line = list(map(lambda x: (x[0], pos_tagger(x[1])), nltk.pos_tag(tmp))) #fai tagging VEDI
+            for word, tag in tmp_line:
+                if tag is None:
+                    lemmas.append(word) #copia diretto
+                else: #se il tag è conosciuto:      
+                    lemmas.append(lemmatizer.lemmatize(word, tag)) #metti parole base/lemmatizzata
+            tokens[index] = lemmas #sovrascrivi nella stessa posizione la nuova frase lemmatizata <3
+        lemmas_set[key] = tokens #metti all'interno della giusta key del dizionario l'insieme di parole lemmatizzate (edu chan <3)
     return lemmas_set
     
 
@@ -91,8 +97,7 @@ def similarity(lemmas):
                 if i != j : #entra tranne quando è se stesso l'array 
 
                     #sum = sum + dist_euclidea(vector[0],vector[1])
-
-                    sum = sum + cosine_similarity(vector[0].toarray(),vector[1].toarray())[0][0]
+                    sum = sum + cosine_similarity(vector[i].toarray(),vector[j].toarray())[0][0]
                     
                     cont = cont + 1 #cont= Totrighe * TotRighe-1
                        
