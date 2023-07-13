@@ -129,9 +129,9 @@ def print_table(results):
 def main():
     phrases = es1.main(external=True)
 
-    x = onomasiological_search(phrases)
-    cos_res = vectorizer(x[0],phrases)
-    score =res_score(cos_res, x[1])
+    res = onomasiological_search(phrases)
+    cos_res = vectorizer(res[0],phrases)
+    score =res_score(cos_res, res[1])
     print_table(score)
     #
 
