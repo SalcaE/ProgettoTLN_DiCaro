@@ -28,7 +28,7 @@ def onomasiological_search(phrases):
         synsets = [wn.synsets(x[0]) for x in sub_list] #estriamo i synsets delle parole piu frequenti
 
         flat_list2 = [item for sublist in synsets for item in sublist]
-        lemma_name= [x.lemmas()[0].name() for x in flat_list2] #estraiamo i nomi sysnet
+        lemma_name= [x.lemmas()[0].name() for x in flat_list2] #estraiamo i nomi sysnet per eliminare room.n1 e room.n2
         sub_list2 = Counter(lemma_name).most_common()[0:10]
 
         hypos = [wn.synsets(x[0])[0].hyponyms() for x in sub_list2] 
