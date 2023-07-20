@@ -1,5 +1,8 @@
 import spacy
 from nltk.wsd import lesk
+from collections import defaultdict
+from rich.console import Console
+from rich.table import Table
 
 def elaborate_sentences(verb):
     sentences = set()
@@ -21,18 +24,15 @@ def elaborate_sentences(verb):
                     
     return list_sentences
 
-
 def cluster(sentences,verb):
-    sentences_dict = []
-    lol=[]
     left_list=[]
     right_list=[]
     
     sp = spacy.load('en_core_web_md')
     for sentence in sentences:
-        doc = sp(sentence)
+        tokens = sp(sentence)
         filter_list=[]
-        for token in doc:
+        for token in tokens:
        
             if any(item in token.lemma_ for item in verb):
                
@@ -48,50 +48,50 @@ def cluster(sentences,verb):
                             else:
                                 filter_list.append('person')
 
-                if len(filter_list) ==2: #salva le coppie per ogni frase
-                    #disambiguazione
-                    z = lesk(sentence,filter_list[0])
-                    z1 = lesk(sentence,filter_list[1])
+                if len(filter_list) == 2: #salva le coppie per ogni frase
+                    x = lesk(sentence,filter_list[0])
+                    y = lesk(sentence,filter_list[1])
 
-                    if z and z1 is not None:
-                        left_list.append(z.lexname())
-                        right_list.append(z1.lexname())
-
-                    sentences_dict.append(filter_list)
-                    lol.append(sentence)
+                    if x and y is not None:
+                        left_list.append(x.lexname())
+                        right_list.append(y.lexname())
     
-    left_to_right = []
-    right_to_left = []
-   
+    left_to_right = defaultdict(set)
+    right_to_left = defaultdict(set)
+    for count, item in enumerate(left_list):
+        left_to_right[item].add(right_list[count])
+    for count, item in enumerate(right_list):
+        right_to_left[item].add(left_list[count])
 
+    print_tables(left_list,right_list,left_to_right,right_to_left)
+    
+def print_tables(left_list,right_list,left_to_right,right_to_left):
+    console = Console()
+    table_l = Table(show_header=True, title="TAKE left to right", show_lines=True)
+    table_l.add_column("Frequenza")
+    table_l.add_column("Sinistra")
+    table_l.add_column("Destra")
 
-    ciao = 1
+    for item in left_to_right:
+        fre = left_list.count(item)
+        table_l.add_row(str(fre)+'/'+str(len(left_list)),item, str(left_to_right[item]))
+    console.print(table_l)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    table_r = Table(show_header=True, title="TAKE right to left", show_lines=True)
+    table_r.add_column("Frequenza")
+    table_r.add_column("Sinistra")
+    table_r.add_column("Destra")
+    for item in right_to_left:
+        fre = right_list.count(item)
+        table_r.add_row(str(fre)+'/'+str(len(right_list)),item, str(right_to_left[item]))
+    console.print(table_r)
 
 def main():
     verb = ["take","took","taken","takes","taking"]
+    #verb = ["do","does","doing","did","done"]
     res= elaborate_sentences(verb)
     cluster(res,verb)
     
 
-
-
 if __name__ == '__main__':
-    # spacy.cli.download('en_core_web_md')
    main()
