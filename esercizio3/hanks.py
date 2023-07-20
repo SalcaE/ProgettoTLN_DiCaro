@@ -30,10 +30,10 @@ def cluster(sentences,verb):
     
     sp = spacy.load('en_core_web_md')
     for sentence in sentences:
-        tokens = sp(sentence)
+        tokens = sp(sentence) #parsifico e tokenizzo
         filter_list=[]
+
         for token in tokens:
-       
             if any(item in token.lemma_ for item in verb):
                
                 for child in token.children:
@@ -48,17 +48,17 @@ def cluster(sentences,verb):
                             else:
                                 filter_list.append('person')
 
-                if len(filter_list) == 2: #salva le coppie per ogni frase
+                if len(filter_list) == 2: #procedo solo se ho 2 argomenti (soggetto, oggetto) sem.type
                     x = lesk(sentence,filter_list[0])
                     y = lesk(sentence,filter_list[1])
 
-                    if x and y is not None:
-                        left_list.append(x.lexname())
+                    if x and y is not None: #prendo il super-sence
+                        left_list.append(x.lexname()) 
                         right_list.append(y.lexname())
     
     left_to_right = defaultdict(set)
     right_to_left = defaultdict(set)
-    for count, item in enumerate(left_list):
+    for count, item in enumerate(left_list): #faccio gli accoppiamenti tra tra i sem.type
         left_to_right[item].add(right_list[count])
     for count, item in enumerate(right_list):
         right_to_left[item].add(left_list[count])
@@ -72,7 +72,7 @@ def print_tables(left_list,right_list,left_to_right,right_to_left):
     table_l.add_column("Sinistra")
     table_l.add_column("Destra")
 
-    for item in left_to_right:
+    for item in left_to_right:  #conto la frequenza delle coppie e metto in riga nella tabella
         fre = left_list.count(item)
         table_l.add_row(str(fre)+'/'+str(len(left_list)),item, str(left_to_right[item]))
     console.print(table_l)
