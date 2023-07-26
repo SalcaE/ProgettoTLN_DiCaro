@@ -21,91 +21,65 @@ def text_processing(filename):
         for sent in doc.sents:
             sents.append(sent)
 
-
-
     tokenized_sents = [[token.lemma_.lower() for token in sent 
                         if not token.is_stop and 
                         not token.is_punct and token.text.strip() and 
                         len(token) >= 3] #vedere se tenere
                         for sent in sents]
+    senteces = [x for x in tokenized_sents if x]
 
-    return tokenized_sents
+    return senteces
 
 def vocabulary(sentences):
-    tupla=()
-    meh=[]
-    mehmeh=[]
-    riempiScore=[]
-    for i in range(0,len(sentences)):
-        if i+1 < len(sentences):#scorro fino all'ultimo
-            
-            x=list(set(sentences[i])-set(sentences[i+1]))
-            x1=list(set(sentences[i+1])-set(sentences[i]))
+    new_words1 = set()
+    new_words2 = set(sentences[0])
+    scores=[]
 
-            ciao = set(sentences[i+1])
-            prova= [f for f in sentences[i] if f not in ciao ]
+    for i in range(1,len(sentences)-1):
+        left_words = set(sentences[i-1]).difference(new_words1)
+        right_words = set(sentences[i+1]).difference(new_words2)
+        score = (len(left_words) + len(right_words)) / (len(sentences[i-1])+len(sentences[i+1]))
+        scores.append(score)
+        new_words1 = new_words1.union(sentences[i-1])
+        new_words2 = new_words2.union(sentences[i+1])
+    last = set(sentences[len(sentences)-1]).difference(new_words1)
+    scores.append(len(last)/len(sentences[len(sentences)-1]))
+    return scores
 
-            for word in sentences[i]:
-                if word not in sentences[i+1]:
-                    meh.append(word)
+def boundaries(scores, sentences): #+1 ordine score tokens 
+    boundaries=[]
+    mean = np.mean(scores) -  np.std(scores)
+    for i, score in enumerate(scores):
+        depth_scores = depth_score(scores, i, "left") + depth_score(scores, i, "right")
 
-            for word in sentences[i+1]:
-                if word not in sentences[i]:
-                    meh.append(word)
-
-            score = len(meh)/(len(sentences[i])+len(sentences[i+1]))
-                #if word in sentences[i+1]:
-                    #sentences[i].remove(word)
-                    #sentences[i+1].remove(word)
-                    #lollino = 1
-
-                    #z= sentences[i].index(word)
-                    #z1 = sentences[i+1].index(word)
-                    #sentences[i].pop(z)
-                    #sentences[i+1].pop(z)
-            #tupla= (i,i+1)
-            tupla= (i,i+1,score)
-            mehmeh.append(tupla)
-            riempiScore.append([score])
-           # meh.append(tupla)
-  
-
-
-    #fare uno score [0,1],[1,2]
-
-    #normalizzo
-    print("cazzo-NP")
-    #x_norm = (riempiScore-np.min(riempiScore))/(np.max(riempiScore)-np.min(riempiScore))
- 
-    t=[]
-    for a in mehmeh:
-        x_norm = (a[2]-np.min(riempiScore))/(np.max(riempiScore)-np.min(riempiScore))
-        i= mehmeh.index(a)
-        tt=(a[0],a[1],x_norm)
-        mehmeh[i] = tt
-        t.append(x_norm)
-      
-        
-
-    print(mehmeh)
-
-
-    #prendo il minimo 3 volte(non credo vada...)
-    print("valori minimi")
-    print(sorted(t)[1])
-    print(sorted(t)[2])
-    print(sorted(t)[3])
-
-    pene = 20
+        if depth_scores >= mean:
+            boundaries.append(i)
+    x = []
+    for i in boundaries:
+        x.append(sentences[i+1])
     
+    return boundaries
 
+def depth_score(scores, current, side):
+    depth_score = 0
+    i = current
+    while scores[i] - scores[current] >= depth_score:
+        depth_score = scores[i] - scores[current]
 
+        if side == 'left':
+            i = i - 1
+            if (i < 0): break
+        else:
+            i = i + 1
+            if (i == len(scores)): break
+    return depth_score
 
-#tupla {(lf,rf,score),...}
 
 def main():
-    sentences = text_processing("esercizio4/sample.txt")
-    vocabulary(sentences)
+    #sentences = text_processing("esercizio4/sample.txt")
+    sentences = text_processing("esercizio4/es2.txt")
+    scores=vocabulary(sentences)
+    boundaries2 = boundaries(scores, sentences)
     
 
 if __name__ == '__main__':
