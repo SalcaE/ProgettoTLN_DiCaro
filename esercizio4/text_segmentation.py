@@ -70,6 +70,7 @@ def pirnt_results(boundaries, sentences):
             print()
 
 def main():
+    #TESTO: ARTICOLO, BARBIE, CORRISPONDENZA CANI
     #tokenized_sents = text_processing("esercizio4/sample.txt")
     tokenized_sents = text_processing("esercizio4/es2.txt")
     scores = vocabulary(tokenized_sents[0])
