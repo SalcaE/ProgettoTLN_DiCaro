@@ -1,13 +1,5 @@
 import spacy
-from collections import defaultdict
-from rich.console import Console
-from rich.table import Table
-from nltk.tokenize import sent_tokenize
-
-from sklearn.preprocessing import StandardScaler
 import numpy as np
-from sklearn import preprocessing
-
 
 def text_processing(filename):
     texts =[]
@@ -21,14 +13,14 @@ def text_processing(filename):
         for sent in doc.sents:
             sents.append(sent)
 
-    tokenized_sents = [[token.lemma_.lower() for token in sent 
+    tokens = [[token.lemma_.lower() for token in sent 
                         if not token.is_stop and 
                         not token.is_punct and token.text.strip() and 
                         len(token) >= 3] #vedere se tenere
                         for sent in sents]
-    senteces = [x for x in tokenized_sents if x]
+    tokenized_sents = [x for x in tokens if x]
 
-    return senteces
+    return tokenized_sents, sents
 
 def vocabulary(sentences):
     new_words1 = set()
@@ -46,7 +38,7 @@ def vocabulary(sentences):
     scores.append(len(last)/len(sentences[len(sentences)-1]))
     return scores
 
-def boundaries(scores, sentences): #+1 ordine score tokens 
+def get_boundaries(scores):
     boundaries=[]
     mean = np.mean(scores) -  np.std(scores)
     for i, score in enumerate(scores):
@@ -54,10 +46,6 @@ def boundaries(scores, sentences): #+1 ordine score tokens
 
         if depth_scores >= mean:
             boundaries.append(i)
-    x = []
-    for i in boundaries:
-        x.append(sentences[i+1])
-    
     return boundaries
 
 def depth_score(scores, current, side):
@@ -74,12 +62,19 @@ def depth_score(scores, current, side):
             if (i == len(scores)): break
     return depth_score
 
+def pirnt_results(boundaries, sentences):
+    print(boundaries)
+    for i, x in enumerate(sentences):
+        print(sentences[i])
+        if i in boundaries:
+            print()
 
 def main():
-    #sentences = text_processing("esercizio4/sample.txt")
-    sentences = text_processing("esercizio4/es2.txt")
-    scores=vocabulary(sentences)
-    boundaries2 = boundaries(scores, sentences)
+    #tokenized_sents = text_processing("esercizio4/sample.txt")
+    tokenized_sents = text_processing("esercizio4/es2.txt")
+    scores = vocabulary(tokenized_sents[0])
+    boundaries = get_boundaries(scores)
+    pirnt_results(boundaries,tokenized_sents[1])
     
 
 if __name__ == '__main__':
