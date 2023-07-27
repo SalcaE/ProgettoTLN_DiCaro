@@ -13,12 +13,12 @@ def text_processing(filename):
         for sent in doc.sents:
             sents.append(sent)
 
-    tokens = [[token.lemma_.lower() for token in sent 
+    tokens = [[token.lemma_.lower() for token in sent       #tokenizzo le frasi
                         if not token.is_stop and 
                         not token.is_punct and token.text.strip() and 
                         len(token) >= 3] #vedere se tenere
                         for sent in sents]
-    tokenized_sents = [x for x in tokens if x]
+    tokenized_sents = [x for x in tokens if x] #tolgo liste vuote
 
     return tokenized_sents, sents
 
@@ -27,10 +27,10 @@ def vocabulary(sentences):
     new_words2 = set(sentences[0])
     scores=[]
 
-    for i in range(1,len(sentences)-1):
+    for i in range(1,len(sentences)-1): #cotrollo parole nuove a sinistra e destra
         left_words = set(sentences[i-1]).difference(new_words1)
         right_words = set(sentences[i+1]).difference(new_words2)
-        score = (len(left_words) + len(right_words)) / (len(sentences[i-1])+len(sentences[i+1]))
+        score = (len(left_words) + len(right_words)) / (len(sentences[i-1])+len(sentences[i+1])) #come nell'articolo
         scores.append(score)
         new_words1 = new_words1.union(sentences[i-1])
         new_words2 = new_words2.union(sentences[i+1])
@@ -48,7 +48,7 @@ def get_boundaries(scores):
             boundaries.append(i)
     return boundaries
 
-def depth_score(scores, current, side):
+def depth_score(scores, current, side): #cerco gli score migliori su cui mettere un confine
     depth_score = 0
     i = current
     while scores[i] - scores[current] >= depth_score:
