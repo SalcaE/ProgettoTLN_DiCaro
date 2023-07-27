@@ -13,7 +13,7 @@ def text_processing(filename):
         for sent in doc.sents:
             sents.append(sent)
 
-    tokens = [[token.lemma_.lower() for token in sent       #tokenizzo le frasi
+    tokens = [[token.lemma_.lower() for token in sent     #tokenizzo le frasi
                         if not token.is_stop and 
                         not token.is_punct and token.text.strip() and 
                         len(token) >= 3] #vedere se tenere
@@ -43,7 +43,6 @@ def get_boundaries(scores):
     mean = np.mean(scores) -  np.std(scores)
     for i, score in enumerate(scores):
         depth_scores = depth_score(scores, i, "left") + depth_score(scores, i, "right")
-
         if depth_scores >= mean:
             boundaries.append(i)
     return boundaries
