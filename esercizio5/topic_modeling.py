@@ -2,7 +2,7 @@ import gensim
 from pprint import pprint
 from gensim import corpora
 import nltk
-nltk.download('stopwords')
+nltk.download('stopwords', quiet=True)
 import os
 from nltk.corpus import stopwords
 import string
@@ -11,7 +11,7 @@ import pyLDAvis.gensim_models as gensimvis
 
 def text_processing(file_location):
     texts=[]
-    stop = set(stopwords.words('english')+list(string.punctuation)+['--','-','``',"\""])
+    stop = set(stopwords.words('english') + list(string.punctuation)+['--','-','``',"\""])
     for file_name in os.listdir(file_location):
         with open(file_location + file_name, 'r') as f:
             text = f.read().replace("\n",' ')
@@ -34,8 +34,10 @@ def lda_process(texts):
     pyLDAvis.save_html(lda_15,'esercizio5/htmlprova15.html')
     pyLDAvis.save_html(lda_20,'esercizio5/htmlprova20.html')
 
+    print('15 TOPIC')
     pprint(lda_model_15.print_topics())
     print('')
+    print('16 TOPIC')
     pprint(lda_model_20.print_topics())
 
 def main():
