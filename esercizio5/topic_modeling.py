@@ -23,9 +23,13 @@ def text_processing(file_location):
     num_topics = 15
     dictionary = corpora.Dictionary(texts)
     corpussss = [dictionary.doc2bow(text) for text in texts]
-    lda_model = gensim.models.LdaMulticore(corpus=corpussss, id2word=dictionary, num_topics=num_topics)
-    pprint(lda_model.print_topics())
-    lda = gensimvis.prepare(lda_model, corpussss, dictionary)
+    lda_model_15 = gensim.models.LdaMulticore(corpus=corpussss, id2word=dictionary, num_topics=15)
+    lda_model_10 = gensim.models.LdaMulticore(corpus=corpussss, id2word=dictionary, num_topics=10)
+    lda_model_20 = gensim.models.LdaMulticore(corpus=corpussss, id2word=dictionary, num_topics=20)
+    pprint(lda_model_15.print_topics())
+    pprint(lda_model_10.print_topics())
+    pprint(lda_model_20.print_topics())
+    #lda = gensimvis.prepare(lda_model, corpussss, dictionary)
 
 
 
