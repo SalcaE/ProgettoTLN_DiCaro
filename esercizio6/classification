@@ -114,8 +114,6 @@ def classifier(data):
     print('STRATIFIED KFOLD score: ',np.mean(mod_score4))
 
 
-
-
 def main():
     data = synset_processing("esercizio6/dataset_basic_advanced_TLN2023/")
     classifier(data)
