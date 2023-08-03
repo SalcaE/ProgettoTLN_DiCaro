@@ -61,7 +61,7 @@ def depth_score(scores, current, side): #cerco gli score migliori su cui mettere
             if (i == len(scores)): break
     return depth_score
 
-def pirnt_results(boundaries, sentences):
+def print_results(boundaries, sentences):
     print(boundaries)
     for i, x in enumerate(sentences):
         print(sentences[i])
@@ -70,7 +70,6 @@ def pirnt_results(boundaries, sentences):
 
 def main():
     #TESTO: ARTICOLO, BARBIE, CORRISPONDENZA CANI
-    #tokenized_sents = text_processing("esercizio4/sample.txt")
     tokenized_sents = text_processing("esercizio4/texts.txt")
     scores = vocabulary(tokenized_sents[0])
     boundaries = get_boundaries(scores)
