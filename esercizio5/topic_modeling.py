@@ -26,13 +26,10 @@ def lda_process(texts,num_topic):
 
     lda_model = gensim.models.LdaMulticore(corpus=corpus, id2word=dictionary, num_topics=num_topic)
   
-
     lda = gensimvis.prepare(lda_model, corpus, dictionary)
-   
 
     pyLDAvis.save_html(lda,'esercizio5/htmlResults.html')
   
-
     print(num_topic,' TOPIC')
     pprint(lda_model.print_topics())
    
