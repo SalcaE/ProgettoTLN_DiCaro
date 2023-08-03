@@ -11,7 +11,7 @@ import pyLDAvis.gensim_models as gensimvis
 
 def text_processing(file_location):
     texts=[]
-    stop = set(stopwords.words('english') + list(string.punctuation)+['--','-','``',"\""])
+    stop = set(stopwords.words('english') + list(string.punctuation) + ['--','-','``',"\""])
     for file_name in os.listdir(file_location):
         with open(file_location + file_name, 'r') as f:
             text = f.read().replace("\n",' ')
@@ -19,7 +19,6 @@ def text_processing(file_location):
             tokens = [doc[0].lower() for doc in nltk.pos_tag(tmp) if doc[0] not in stop and doc[1] in ['NN','NNS','NNP','NNPS']]
             texts.append(tokens)
     return texts
-
 
 def lda_process(texts):
     dictionary = corpora.Dictionary(texts)
