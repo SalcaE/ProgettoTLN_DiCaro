@@ -20,28 +20,26 @@ def text_processing(file_location):
             texts.append(tokens)
     return texts
 
-def lda_process(texts):
+def lda_process(texts,num_topic):
     dictionary = corpora.Dictionary(texts)
     corpus = [dictionary.doc2bow(text) for text in texts]
 
-    lda_model_15 = gensim.models.LdaMulticore(corpus=corpus, id2word=dictionary, num_topics=15)
-    lda_model_20 = gensim.models.LdaMulticore(corpus=corpus, id2word=dictionary, num_topics=20)
+    lda_model = gensim.models.LdaMulticore(corpus=corpus, id2word=dictionary, num_topics=num_topic)
+  
 
-    lda_15 = gensimvis.prepare(lda_model_15, corpus, dictionary)
-    lda_20 = gensimvis.prepare(lda_model_20, corpus, dictionary)
+    lda = gensimvis.prepare(lda_model, corpus, dictionary)
+   
 
-    pyLDAvis.save_html(lda_15,'esercizio5/htmlprova15.html')
-    pyLDAvis.save_html(lda_20,'esercizio5/htmlprova20.html')
+    pyLDAvis.save_html(lda,'esercizio5/htmlResults.html')
+  
 
-    print('15 TOPIC')
-    pprint(lda_model_15.print_topics())
-    print('')
-    print('16 TOPIC')
-    pprint(lda_model_20.print_topics())
+    print(num_topic,' TOPIC')
+    pprint(lda_model.print_topics())
+   
 
 def main():
     texts = text_processing("esercizio5/data/")
-    lda_process(texts)
+    lda_process(texts,20)
 
     
 if __name__ == '__main__':
