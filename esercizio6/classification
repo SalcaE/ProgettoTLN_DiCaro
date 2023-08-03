@@ -103,12 +103,12 @@ def classifier(data):
 
 
     model=DecisionTreeClassifier()
-    kfold_validation=KFold(40)
+    kfold_validation=KFold(100)
     mod_score3=cross_val_score(model,X_train,y_train,cv=kfold_validation)
     print('KFOLD score: ',np.mean(mod_score3))
 
 
-    sk_fold=StratifiedKFold(n_splits=10)
+    sk_fold=StratifiedKFold(n_splits=100)
     model=DecisionTreeClassifier()
     mod_score4=cross_val_score(model,X_train,y_train,cv=sk_fold)
     print('STRATIFIED KFOLD score: ',np.mean(mod_score4))
