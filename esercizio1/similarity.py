@@ -124,7 +124,7 @@ def print_table(results):
 
 
 def main(external=False):
-    data=read_tsv('Esercizio1\TLN-definitions-23.tsv')#data = array {'key':[frase1,frase2]} {key..}
+    data=read_tsv('esercizio1\TLN-definitions-23.tsv')#data = array {'key':[frase1,frase2]} {key..}
     lemmas = lemmatizzation(data) #lemmas: dizionario sulle key con tutte frasi lemmatizzate 
     results = similarity(lemmas)
    # print_table(results)
