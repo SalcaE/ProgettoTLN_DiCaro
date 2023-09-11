@@ -9,7 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from nltk.corpus import wordnet  as wn
 
-def onomasiological_search(phrases):
+def search(phrases):
     definitions = {
         'door': [],
         'ladybug': [],
@@ -28,7 +28,7 @@ def onomasiological_search(phrases):
         synsets = [wn.synsets(x[0]) for x in sub_list] #estriamo i synsets delle parole piu frequenti
 
         flat_list2 = [item for sublist in synsets for item in sublist]
-        lemma_name= [x.lemmas()[0].name() for x in flat_list2] #estraiamo i nomi sysnet per eliminare room.n1 e room.n2
+        lemma_name= [x.lemmas()[0].name() for x in flat_list2] #da room.n1 e room.n2, ecc.. a room
         sub_list2 = Counter(lemma_name).most_common()[0:10]
 
         hypos = [wn.synsets(x[0])[0].hyponyms() for x in sub_list2] 
@@ -36,7 +36,7 @@ def onomasiological_search(phrases):
         count_syn = Counter(flat_res).most_common()[0:20] #estraggo i primi 20 iponimi
 
         syns[concept] = count_syn  
-        definitions[concept] = [x[0].definition() for x in count_syn] #degli iponimi
+        definitions[concept] = [x[0].definition() for x in count_syn]
     definitions_lemmas = es1.lemmatizzation(definitions) 
     return definitions_lemmas, syns
 
@@ -65,8 +65,7 @@ def vectorizer(definitions_lemmas, phrases):
         vectorizer = CountVectorizer()
         for elem in join_def:
             document.append(" ".join(elem)) 
-        vectorizer.fit(document)
-        vector = vectorizer.transform(document)
+        vector = vectorizer.fit_transform(document)
         def_wd = vector[0:len(definitions_lemmas[key])] #divido matrice tra frasi definizioni iponimi e non 
         def_og = vector[len(definitions_lemmas[key]):(len(definitions_lemmas[key])+(len(phrases[key])))]
         tuple_list = []
@@ -99,7 +98,6 @@ def res_score_lesk(res):
     for key, syn in res.items():
         counter = Counter(syn) #conta le occorrenze dei synset nella lista
         leng = len(syn)
-        counter.most_common() #ordino decrescente
         occurrences[key] = [(value, occ / leng * 100) for value, occ in counter.most_common()] #calcolo la percentuale di ogni synset
     return occurrences
 
@@ -112,7 +110,7 @@ def res_score(cos,syns):
     }
     for key, value in cos.items():
         for x in value:
-            occurrences[key].append((syns[key][x[1]][0],x[0])) #associo sysnset allo score
+            occurrences[key].append((syns[key][x[1]][0],x[0]))
     return occurrences 
 
 def print_table(results):
@@ -129,12 +127,11 @@ def print_table(results):
 def main():
     phrases = es1.main(external=True)
 
-    res = onomasiological_search(phrases)
+    res = search(phrases)
     cos_res = vectorizer(res[0],phrases)
     score =res_score(cos_res, res[1])
     print_table(score)
     #
-
     wsd = wordDisambiguation_search(phrases)
     occurrences = res_score_lesk(wsd)
     print_table(occurrences)

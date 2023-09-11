@@ -49,23 +49,23 @@ def lemmatizzation(data):
         'blurriness': []
     }
 
-    lemmatizer = WordNetLemmatizer() #classe contentente tutti i lemmi(parole base)
+    lemmatizer = WordNetLemmatizer()
     stop = set(stopwords.words('english') + list(string.punctuation) + ["'s", "'", "n't","\"", "``", "'d", "'re", "''","''"])#rimozioni di parole e punteggiature 
 
-    for key, values in data.items(): #values contiene tutte le frasi già divise su key
-        tokens = [word_tokenize(i.lower()) for i in values]#trasformo ogni paraola delle frasi in token e le metto lower
+    for key, values in data.items():
+        tokens = [word_tokenize(i.lower()) for i in values]
         for x in tokens:
             lemmas = []
-            index = tokens.index(x) #prendo indice nell'array di token/frasi
-            tmp = [word for word in x if not word in stop] #in tmp ho la frase pulita con le stop
-            tmp_line = list(map(lambda x: (x[0], pos_tagger(x[1])), nltk.pos_tag(tmp))) #fai tagging VEDI
+            index = tokens.index(x)
+            tmp = [word for word in x if not word in stop]
+            tmp_line = list(map(lambda x: (x[0], pos_tagger(x[1])), nltk.pos_tag(tmp)))
             for word, tag in tmp_line:
                 if tag is None:
-                    lemmas.append(word) #copia diretto
-                else: #se il tag è conosciuto:      
-                    lemmas.append(lemmatizer.lemmatize(word, tag)) #metti parole base/lemmatizzata
-            tokens[index] = lemmas #sovrascrivi nella stessa posizione la nuova frase lemmatizata <3
-        lemmas_set[key] = tokens #metti all'interno della giusta key del dizionario l'insieme di parole lemmatizzate (edu chan <3)
+                    lemmas.append(word)
+                else:
+                    lemmas.append(lemmatizer.lemmatize(word, tag))
+            tokens[index] = lemmas #sovrascrivi nella stessa posizione la nuova frase lemmatizata
+        lemmas_set[key] = tokens
     return lemmas_set
     
 
@@ -79,29 +79,25 @@ def similarity(lemmas):
     for key, values in lemmas.items():
         sum = 0
         document=[]
-        vectorizer = CountVectorizer()#per creare la matrice di parole uniche
-        for elem in values:#per ogni array token
+        vectorizer = CountVectorizer()
+        for elem in values:
             document.append(" ".join(elem)) #per ogni array convertilo in stringa e mettilo in document
-        vectorizer.fit(document)#magia
-        vector = vectorizer.transform(document) #codifica il documuento
-
-        #print("Vocabulary: ", vectorizer.vocabulary_)
+        vector = vectorizer.fit_transform(document)
         
-        cont = 0 #reset per ogni key nuova
+        cont = 0
         for x in vector.toarray().tolist():
-            i = vector.toarray().tolist().index(x)#prendo la posizione dell'array dentro vector (all'inizio il primo..)
+            i = vector.toarray().tolist().index(x)
             
-            for y in vector.toarray().tolist():#prendo element
-                j = vector.toarray().tolist().index(y) #prendo posizione di y
+            for y in vector.toarray().tolist():
+                j = vector.toarray().tolist().index(y)
                 
-                if i != j : #entra tranne quando è se stesso l'array 
+                if i != j :
 
                     #sum = sum + dist_euclidea(vector[0],vector[1])
                     sum = sum + cosine_similarity(vector[i].toarray(),vector[j].toarray())[0][0]
-                    
-                    cont = cont + 1 #cont= Totrighe * TotRighe-1
+                    cont = cont + 1
                        
-        similarity[key] = (sum/cont) #metto la media tra totale valore/volte che è stato calcolato
+        similarity[key] = (sum/cont)
     return similarity
 
 def dist_euclidea(v0,v1):
@@ -110,32 +106,27 @@ def dist_euclidea(v0,v1):
     return np.linalg.norm(a-b)
     
 
-
-
 def print_table(results):
     console = Console()
     table = Table(title="Result")
-    table.add_column("")#prima colonna vuota
+    table.add_column("")
     table.add_column("Astratto")
     table.add_column("Concreto")
-    table.add_row("Generico", str(round(results['pain'], 6)), str(round(results['door'], 6)))#round arrotonda le cifre decimali a 6
+    table.add_row("Generico", str(round(results['pain'], 6)), str(round(results['door'], 6)))
     table.add_row("Specifico", str(round(results['blurriness'], 6)), str(round(results['ladybug'], 6)))
     console.print(table)
 
 
 def main(external=False):
-    data=read_tsv('esercizio1\TLN-definitions-23.tsv')#data = array {'key':[frase1,frase2]} {key..}
-    lemmas = lemmatizzation(data) #lemmas: dizionario sulle key con tutte frasi lemmatizzate 
+    data=read_tsv('esercizio1\TLN-definitions-23.tsv')
+    lemmas = lemmatizzation(data)
     results = similarity(lemmas)
-   # print_table(results)
-    
 
     if not external:
         print_table(results)
     
     return lemmas
 
-
 if __name__ == '__main__':
-    # print(squash_function([1,2,1]))
+
     main()

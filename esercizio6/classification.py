@@ -83,6 +83,7 @@ def synset_processing(file_location):
     df["syn"] = label2
     df["difficulty"] = label1
     df["category"] = label
+    print(df)
 
     return df
 

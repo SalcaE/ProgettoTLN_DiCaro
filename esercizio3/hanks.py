@@ -17,7 +17,7 @@ def elaborate_sentences(verb):
         personal_name = x.read().split('\n')
     
     list_sentences = list(sentences)
-    for count,sentence in enumerate(list_sentences):  # metto person al posto dei nomi
+    for count,sentence in enumerate(list_sentences):
         for word in sentence.split() :
             if word in personal_name:
                     list_sentences[count] = sentence.replace(word, 'person')
@@ -52,7 +52,7 @@ def cluster(sentences,verb):
                     x = lesk(sentence,filter_list[0])
                     y = lesk(sentence,filter_list[1])
 
-                    if x and y is not None: #prendo il super-sence
+                    if x and y is not None: #prendo il super-sense
                         left_list.append(x.lexname()) 
                         right_list.append(y.lexname())
     

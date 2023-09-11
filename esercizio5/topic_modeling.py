@@ -25,9 +25,8 @@ def lda_process(texts,num_topic):
     corpus = [dictionary.doc2bow(text) for text in texts]
 
     lda_model = gensim.models.LdaMulticore(corpus=corpus, id2word=dictionary, num_topics=num_topic)
-  
+    
     lda = gensimvis.prepare(lda_model, corpus, dictionary)
-
     pyLDAvis.save_html(lda,'esercizio5/htmlResults.html')
   
     print(num_topic,' TOPIC')
@@ -36,7 +35,7 @@ def lda_process(texts,num_topic):
 
 def main():
     texts = text_processing("esercizio5/data/")
-    lda_process(texts,20)
+    lda_process(texts,5)
 
     
 if __name__ == '__main__':

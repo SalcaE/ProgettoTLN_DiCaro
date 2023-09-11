@@ -52,7 +52,6 @@ def depth_score(scores, current, side): #cerco gli score migliori su cui mettere
     i = current
     while scores[i] - scores[current] >= depth_score:
         depth_score = scores[i] - scores[current]
-
         if side == 'left':
             i = i - 1
             if (i < 0): break
@@ -73,7 +72,7 @@ def main():
     tokenized_sents = text_processing("esercizio4/texts.txt")
     scores = vocabulary(tokenized_sents[0])
     boundaries = get_boundaries(scores)
-    pirnt_results(boundaries,tokenized_sents[1])
+    print_results(boundaries,tokenized_sents[1])
     
 
 if __name__ == '__main__':
